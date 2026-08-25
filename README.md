@@ -38,7 +38,7 @@ Internal server at `http://127.0.0.1:5051`
 3. Navigate to the `SSRF-homie-lab/` directory.
 4. To start a level, replace `N` with the level number in the command below:
 ```
-./start_level.sh -N
+bash start_level.sh -N
 ```
 
 5. Open `http://127.0.0.1:5050/levelN` and try to find SSRF. 
