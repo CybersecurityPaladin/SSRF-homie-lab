@@ -1,3 +1,5 @@
 ﻿Level 1:
 FLAG{admin_panel_via_og}
 
+Level 2:
+FLAG{dns_rebinding_toctou_bypass}
