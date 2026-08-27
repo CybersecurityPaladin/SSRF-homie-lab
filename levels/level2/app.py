@@ -101,7 +101,7 @@ def level2_trigger():
     # except requests.exceptions.RequestException as e:
     #     return jsonify(error=f"Delivery failed: {e}"), 502
 
-    # COMMENT try/except blow below
+    # COMMENT try/except block below
     try:
         r = requests.post(url, json={"event": "order.status", "status": "shipped"}, timeout=5)
         body = r.text[:2000]
