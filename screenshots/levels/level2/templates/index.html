@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification Settings</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #e9ebee;
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container { max-width: 680px; margin: 0 auto; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 24px; margin: 0 0 6px; }
+    h2 { font-size: 16px; margin: 0 0 12px; color: #1a1a2e; }
+    .sub { color: #606770; font-size: 14px; margin-bottom: 16px; }
+    label { display: block; font-size: 13px; color: #606770; margin-bottom: 6px; }
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #dddfe2;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+    .current {
+      font-size: 13px;
+      color: #606770;
+      margin-bottom: 12px;
+    }
+    .current code {
+      background: #f0f2f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 12px;
+      padding: 10px 24px;
+      background: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover { background: #166fe5; }
+    button.secondary { background: #42b72a; }
+    button.secondary:hover { background: #36a420; }
+    .loader { display: none; color: #606770; margin: 12px 0; }
+    .loader.show { display: block; }
+    pre#result {
+      background: #f0f2f5;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 320px;
+      overflow: auto;
+    }
+    .error-msg {
+      color: #d93025;
+      background: #fce8e6;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="card">
+    <h1>🔔 Notification Settings</h1>
+    <div class="sub">Configure a webhook URL to receive order-status notifications.</div>
+
+    <h2>1. Save webhook URL</h2>
+    {% if saved_url %}
+    <div class="current">Currently saved: <code>{{ saved_url }}</code></div>
+    {% endif %}
+    <form id="saveForm">
+      <label for="url">Webhook URL</label>
+      <input type="text" id="url" name="url" placeholder="http://hooks.notifyservice.lab/" value="http://hooks.notifyservice.lab/">
+      <button type="submit">Save</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>2. Send test notification</h2>
+    <div class="sub">We'll POST a sample order-status event to your saved webhook.</div>
+    <form id="triggerForm">
+      <button type="submit" class="secondary">Send Test Webhook</button>
+    </form>
+  </div>
+
+  <div class="loader" id="loader">⏳ Sending...</div>
+  <div class="error-msg" id="errorMsg"></div>
+  <pre id="result">// result will appear here</pre>
+</div>
+
+<script>
+  const loader = document.getElementById('loader');
+  const errorMsg = document.getElementById('errorMsg');
+  const result = document.getElementById('result');
+
+  function showError(msg) {
+    errorMsg.textContent = '❌ ' + msg;
+    errorMsg.classList.add('show');
+  }
+
+  document.getElementById('saveForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.remove('show');
+    loader.classList.add('show');
+    const fd = new FormData(e.target);
+    try {
+      const r = await fetch('/level2/save', {method: 'POST', body: fd});
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      result.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      loader.classList.remove('show');
+    }
+  });
+
+  document.getElementById('triggerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.remove('show');
+    loader.classList.add('show');
+    try {
+      const r = await fetch('/level2/trigger', {method: 'POST'});
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      result.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      loader.classList.remove('show');
+    }
+  });
+</script>
+</body>
+</html>
