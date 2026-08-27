@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microblog</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #e9ebee;
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 24px; margin: 0 0 6px; }
+    .sub { color: #606770; font-size: 14px; margin-bottom: 16px; }
+    textarea {
+      width: 100%;
+      border: 1px solid #dddfe2;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 24px;
+      background: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover { background: #166fe5; }
+    .loader {
+      display: none;
+      color: #606770;
+      margin: 12px 0;
+    }
+    .loader.show { display: block; }
+
+    /* Post */
+    .post {
+      border-top: 1px solid #dddfe2;
+      padding-top: 16px;
+      margin-top: 16px;
+      display: none;
+    }
+    .post.show { display: block; }
+    .post .user { font-weight: 600; margin-bottom: 4px; }
+    .post .text {
+      white-space: pre-wrap;
+      margin: 8px 0 4px;
+      word-break: break-word;
+    }
+    .post .link-card {
+      border: 1px solid #dddfe2;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    .post .link-card img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .post .link-card .info {
+      padding: 12px;
+    }
+    .post .link-card .info .title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: #1a1a2e;
+    }
+    .post .link-card .info .desc {
+      color: #606770;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .post .link-card .info .domain {
+      color: #606770;
+      font-size: 12px;
+      text-transform: lowercase;
+    }
+    .error-msg {
+      color: #d93025;
+      background: #fce8e6;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>Microblog</h1>
+    <div class="sub">Best day for posting</div>
+
+    <form id="postForm">
+      <textarea name="text" placeholder="What's new?"></textarea>
+      <button type="submit">Publish</button>
+    </form>
+
+    <div class="loader" id="loader">⏳ Loading data... This may take a while</div>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Published post -->
+    <div class="post" id="postPreview">
+      <div class="user">👤 You</div>
+      <div class="text" id="postText"></div>
+      <div class="link-card" id="linkCard">
+        <img id="ogImage" src="" alt="preview">
+        <div class="info">
+          <div class="title" id="ogTitle">Title</div>
+          <div class="desc" id="ogDesc">Description</div>
+          <div class="domain" id="ogDomain">example.com</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('postForm');
+  const loader = document.getElementById('loader');
+  const errorMsg = document.getElementById('errorMsg');
+  const postPreview = document.getElementById('postPreview');
+  const postText = document.getElementById('postText');
+  const ogImage = document.getElementById('ogImage');
+  const ogTitle = document.getElementById('ogTitle');
+  const ogDesc = document.getElementById('ogDesc');
+  const ogDomain = document.getElementById('ogDomain');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const text = formData.get('text').trim();
+
+    if (!text) {
+      showError('Enter post text');
+      return;
+    }
+
+    loader.classList.add('show');
+    postPreview.classList.remove('show');
+    errorMsg.classList.remove('show');
+
+    try {
+      const response = await fetch('/level1/check', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      console.log('Полный ответ:', data);
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      postText.textContent = data.text;
+
+      if (data.og) {
+        const og = data.og;
+        ogImage.src = og.image || '';
+        ogImage.style.display = og.image ? 'block' : 'none';
+        ogTitle.textContent = og.title || og.domain || 'Link';
+        ogDesc.textContent = og.description || '';
+        ogDomain.textContent = og.domain || '';
+        postPreview.classList.add('show');
+      } else {
+        postPreview.classList.add('show');
+        document.getElementById('linkCard').style.display = 'none';
+      }
+
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      loader.classList.remove('show');
+    }
+  });
+
+  function showError(msg) {
+    errorMsg.textContent = '❌ ' + msg;
+    errorMsg.classList.add('show');
+  }
+</script>
+</body>
+</html>
