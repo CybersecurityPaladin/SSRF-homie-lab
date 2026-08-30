@@ -25,6 +25,12 @@ def get_level_scripts(level_num):
             ("rebind_dns.py", level_dir),
             ("app.py", level_dir)
         ]
+    elif level_num == 3:
+        return [
+            ("internal_target.py", level_dir),
+            ("partner_service.py", level_dir),
+            ("app.py", level_dir)
+        ]
     else:
         raise ValueError(f"Unsupported level number: {level_num}")
 
@@ -48,7 +54,6 @@ def main():
                 p.terminate()
             except:
                 pass
-        time.sleep(0.5)
         for p in processes:
             if p.poll() is None:
                 try:
