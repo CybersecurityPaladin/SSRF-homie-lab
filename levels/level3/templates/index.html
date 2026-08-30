@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner Offer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    .banner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 80vw;
+      height: 75vh;
+      background: linear-gradient(135deg, #ff512f, #dd2476);
+      border-radius: 16px;
+      text-decoration: none;
+      color: white;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      transition: transform .15s ease;
+    }
+    .banner:hover { transform: scale(1.01); }
+    .banner .tag {
+      font-size: 18px;
+      letter-spacing: 3px;
+      opacity: .85;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .banner h1 {
+      font-size: 56px;
+      margin-bottom: 18px;
+    }
+    .banner p {
+      font-size: 20px;
+      opacity: .9;
+    }
+    .banner .cta {
+      margin-top: 34px;
+      padding: 14px 40px;
+      background: white;
+      color: #dd2476;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <a class="banner" href="{{ banner_href }}">
+    <div class="tag">Sponsored</div>
+    <h1>&#9889; 70% OFF Today Only</h1>
+    <p>Our biggest partner sale of the year is here.</p>
+    <div class="cta">Claim Offer &rarr;</div>
+  </a>
+</body>
+</html>
