@@ -1,5 +1,8 @@
-﻿Level 1:
+Level 1:
 FLAG{admin_panel_via_og}
 
 Level 2:
 FLAG{dns_rebinding_toctou_bypass}
+
+Level 3:
+FLAG{ssrf_via_redirect_bypass}
