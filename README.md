@@ -7,9 +7,9 @@
 ---
 
 ### **INTRO**
-This lab will help to understand how everything works under the hood when it comes to SSRF vulnerabilities.  
-It is important to build hands-on lab from scratch.  
+Understand how everything works under the hood.  
 **❗️I will periodically update this repository to add new levels.**
+(total: 3 levels)
 
 ---
 ### **TOOLS**
@@ -28,7 +28,8 @@ It is important to build hands-on lab from scratch.
 
 Backend - `http://127.0.0.1:5050`  
 Internal server - `5051`  
-DNS - `5052`
+DNS - `5052`  
+Partner Service - `5054`
 
 ---
 
